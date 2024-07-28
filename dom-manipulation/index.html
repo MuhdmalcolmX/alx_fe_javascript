@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dynamic Quote Generator</title>
+  <style>
+    .notification { display: none; background-color: #f9edbe; padding: 10px; margin: 10px; border: 1px solid #f0c36d; }
+    .conflict-resolution { display: none; }
+  </style>
 </head>
 <body>
   <h1>Dynamic Quote Generator</h1>
@@ -15,16 +19,24 @@
   
   <div id="quoteDisplay"></div>
   <button id="newQuote">Show New Quote</button>
-
-  <div>
-    <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
-    <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
-    <button onclick="addQuote()">Add Quote</button>
+  <div class="notification" id="notification"></div>
+  <div class="conflict-resolution" id="conflictResolution">
+    <p>Conflict detected. Choose which data to keep:</p>
+    <div>
+      <h3>Local Version</h3>
+      <p id="localQuote"></p>
+      <button onclick="resolveConflict('local')">Keep Local</button>
+    </div>
+    <div>
+      <h3>Server Version</h3>
+      <p id="serverQuote"></p>
+      <button onclick="resolveConflict('server')">Keep Server</button>
+    </div>
   </div>
-
-  <button onclick="exportToJsonFile()">Export Quotes</button>
-  <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
-  
+  <input type="text" id="newQuoteText" placeholder="Enter a new quote">
+  <input type="text" id="newQuoteCategory" placeholder="Enter quote category">
+  <button onclick="addQuote()">Add Quote</button>
   <script src="script.js"></script>
 </body>
 </html>
+
