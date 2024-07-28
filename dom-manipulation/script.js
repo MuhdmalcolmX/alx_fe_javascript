@@ -119,25 +119,32 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
 // -------------------------------------
 
 // Define the server URL (JSONPlaceholder endpoint for posts, simulating quotes)
+//let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
 const serverUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-function syncDataWithServer() {
+// Fetch quotes from the server and handle conflicts
+function fetchQuotesFromServer() {
   fetch(serverUrl)
     .then(response => response.json())
     .then(serverQuotes => {
+      const formattedServerQuotes = serverQuotes.map(quote => ({
+        id: quote.id,
+        text: quote.title,
+        category: quote.body
+      }));
+
       let conflictsDetected = false;
 
-      serverQuotes.forEach(serverQuote => {
-        const formattedServerQuote = { id: serverQuote.id, text: serverQuote.title, category: serverQuote.body };
-        const localIndex = quotes.findIndex(q => q.id === formattedServerQuote.id);
+      formattedServerQuotes.forEach(serverQuote => {
+        const localIndex = quotes.findIndex(q => q.id === serverQuote.id);
 
         if (localIndex !== -1) {
-          if (JSON.stringify(quotes[localIndex]) !== JSON.stringify(formattedServerQuote)) {
+          if (JSON.stringify(quotes[localIndex]) !== JSON.stringify(serverQuote)) {
             conflictsDetected = true;
-            displayConflictResolution(quotes[localIndex], formattedServerQuote);
+            displayConflictResolution(quotes[localIndex], serverQuote);
           }
         } else {
-          quotes.push(formattedServerQuote);
+          quotes.push(serverQuote);
         }
       });
 
@@ -149,6 +156,7 @@ function syncDataWithServer() {
     .catch(error => displayNotification('Error syncing with server.'));
 }
 
+// Display notification messages
 function displayNotification(message) {
   const notification = document.getElementById('notification');
   notification.innerText = message;
@@ -156,6 +164,7 @@ function displayNotification(message) {
   setTimeout(() => { notification.style.display = 'none'; }, 5000);
 }
 
+// Show conflict resolution options
 function displayConflictResolution(localQuote, serverQuote) {
   const conflictResolution = document.getElementById('conflictResolution');
   document.getElementById('localQuote').innerText = `${localQuote.text} (Category: ${localQuote.category})`;
@@ -166,6 +175,7 @@ function displayConflictResolution(localQuote, serverQuote) {
   conflictResolution.dataset.serverQuote = JSON.stringify(serverQuote);
 }
 
+// Handle user's choice in conflict resolution
 function resolveConflict(choice) {
   const conflictResolution = document.getElementById('conflictResolution');
   const localId = conflictResolution.dataset.localId;
@@ -183,6 +193,7 @@ function resolveConflict(choice) {
   displayNotification('Conflict resolved.');
 }
 
+// Add a new quote and sync with the server
 function addQuote() {
   const text = document.getElementById('newQuoteText').value;
   const category = document.getElementById('newQuoteCategory').value;
@@ -210,15 +221,20 @@ function addQuote() {
   }
 }
 
+// Save quotes to local storage
 function saveQuotes() {
   localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
-setInterval(syncDataWithServer, 60000);
+// Periodically sync data with the server
+setInterval(fetchQuotesFromServer, 60000); // Sync every 60 seconds
+
+// Initial setup
 window.onload = function() {
-  syncDataWithServer();
+  fetchQuotesFromServer(); // Initial sync with server
 };
 
+// Function to display a random quote (assuming a function already exists)
 function showRandomQuote() {
   if (quotes.length > 0) {
     const randomIndex = Math.floor(Math.random() * quotes.length);
