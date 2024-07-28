@@ -122,8 +122,8 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
 //let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
 const serverUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-// Sync quotes between local storage and server
-async function syncQuotes() {
+// Fetch quotes from the server and handle conflicts
+async function fetchQuotesFromServer() {
   try {
     const response = await fetch(serverUrl);
     const serverQuotes = await response.json();
@@ -211,7 +211,7 @@ async function addQuote() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newQuote.text, body: newQuote.category })
       });
-      await response.json();
+      const data = await response.json();
       displayNotification('Quote synced with server.');
     } catch (error) {
       displayNotification('Error syncing quote with server.');
@@ -230,14 +230,14 @@ function saveQuotes() {
 }
 
 // Periodically sync data with the server
-setInterval(syncQuotes, 60000); // Sync every 60 seconds
+setInterval(fetchQuotesFromServer, 60000); // Sync every 60 seconds
 
 // Initial setup
 window.onload = function() {
-  syncQuotes(); // Initial sync with server
+  fetchQuotesFromServer(); // Initial sync with server
 };
 
-// Function to display a random quote
+// Function to display a random quote (assuming a function already exists)
 function showRandomQuote() {
   if (quotes.length > 0) {
     const randomIndex = Math.floor(Math.random() * quotes.length);
