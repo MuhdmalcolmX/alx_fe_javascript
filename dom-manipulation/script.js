@@ -72,9 +72,8 @@ const quotes = [
     });
   }
   
-  // Event listeners for the buttons
-  document.getElementById('newQuote').addEventListener('click', showRandomQuote);
-  // Event listeners for the buttons
+
+// Event listeners for the buttons
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 document.getElementById('addQuote').addEventListener('click', createAddQuoteForm); // New listener for adding quotes
 
