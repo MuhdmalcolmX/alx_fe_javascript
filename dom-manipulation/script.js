@@ -236,13 +236,13 @@ document.getElementById('addQuote').addEventListener('click', createAddQuoteForm
 document.getElementById('exportQuotes').addEventListener('click', exportToJsonFile);
 
 // Initialize with a random quote
-// if (quotes.length === 0) {
-//   quotes = [
-//     { text: "The only way to do great work is to love what you do.", category: "Inspiration" },
-//     { text: "Life is what happens when you're busy making other plans.", category: "Life" },
-//     { text: "Do not watch the clock. Do what it does. Keep going.", category: "Motivation" },
-//     { text: "You miss 100% of the shots you don't take.", category: "Courage" }
-//   ];
-//   saveQuotes(); // Save initial quotes to local storage
-// }
+if (quotes.length === 0) {
+  quotes = [
+    { text: "The only way to do great work is to love what you do.", category: "Inspiration" },
+    { text: "Life is what happens when you're busy making other plans.", category: "Life" },
+    { text: "Do not watch the clock. Do what it does. Keep going.", category: "Motivation" },
+    { text: "You miss 100% of the shots you don't take.", category: "Courage" }
+  ];
+  saveQuotes(); // Save initial quotes to local storage
+}
 // showRandomQuote();
