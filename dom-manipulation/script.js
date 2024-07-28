@@ -29,7 +29,7 @@ function saveLastSelectedCategory(category) {
 }
 
 // Populate the category filter dropdown
-function populateCategoryFilter() {
+function populateCategory() {
     const categoryFilter = document.getElementById('categoryFilter');
     const categories = [...new Set(quotes.map(quote => quote.category))]; // Unique categories
     
@@ -226,7 +226,7 @@ function createAddQuoteForm() {
 
 // Initial setup
 let quotes = loadQuotes();
-populateCategoryFilter();
+populateCategory();
 filterQuotes();
 
 
