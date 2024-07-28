@@ -1,5 +1,3 @@
-// script.js
-
 // Array of quote objects
 const quotes = [
     { text: "The only way to do great work is to love what you do.", category: "Inspiration" },
@@ -44,6 +42,7 @@ const quotes = [
     quoteInput.setAttribute('placeholder', 'Enter quote text');
     categoryInput.setAttribute('type', 'text');
     categoryInput.setAttribute('placeholder', 'Enter quote category');
+    submitButton.setAttribute('type', 'submit');
     submitButton.textContent = 'Add Quote';
   
     // Append form elements
@@ -55,19 +54,30 @@ const quotes = [
     // Event listener for form submission
     form.addEventListener('submit', function(event) {
       event.preventDefault();
-      const newQuote = {
-        text: quoteInput.value,
-        category: categoryInput.value
-      };
-      quotes.push(newQuote);
-      alert('Quote added!');
-      form.reset();
-      showRandomQuote(); // Display a random quote after adding a new one
+      const newQuoteText = quoteInput.value.trim();
+      const newQuoteCategory = categoryInput.value.trim();
+  
+      if (newQuoteText && newQuoteCategory) {
+        const newQuote = {
+          text: newQuoteText,
+          category: newQuoteCategory
+        };
+        quotes.push(newQuote);
+        alert('Quote added!');
+        form.reset();
+        showRandomQuote(); // Display a random quote after adding a new one
+      } else {
+        alert('Please fill in both fields.');
+      }
     });
   }
   
-  // Event listener for the "Show New Quote" button
+  // Event listeners for the buttons
   document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+  // Event listeners for the buttons
+document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+document.getElementById('addQuote').addEventListener('click', createAddQuoteForm); // New listener for adding quotes
+
   
   // Initialize with a random quote
   showRandomQuote();
