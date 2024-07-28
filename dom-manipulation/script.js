@@ -121,48 +121,47 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
 // Define the server URL (JSONPlaceholder endpoint for posts, simulating quotes)
 const serverUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-
-// Function to sync data with the server
+// Function to fetch data from the server and update local storage
 function syncDataWithServer() {
   fetch(serverUrl)
     .then(response => response.json())
     .then(serverQuotes => {
-      // For simplicity, let's assume serverQuotes is an array of objects with "id", "title", and "body"
-      // Map server data to your local format
       const formattedServerQuotes = serverQuotes.map(quote => ({
         id: quote.id,
-        text: quote.title, // Assuming "title" is the quote text
-        category: quote.body // Assuming "body" contains the category
+        text: quote.title,
+        category: quote.body
       }));
       
-      // Update local quotes with server data
+      // Sync local quotes with server data
       formattedServerQuotes.forEach(serverQuote => {
         const index = quotes.findIndex(q => q.id === serverQuote.id);
         if (index !== -1) {
-          quotes[index] = serverQuote; // Server data takes precedence
+          // Conflict resolution: server data takes precedence
+          quotes[index] = serverQuote;
         } else {
-          quotes.push(serverQuote); // New quote from server
+          // Add new quote from server
+          quotes.push(serverQuote);
         }
       });
 
       // Save updated quotes to local storage
       localStorage.setItem('quotes', JSON.stringify(quotes));
-      console.log('Quotes synced with server');
+      console.log('Data synced with server.');
     })
     .catch(error => console.error('Error syncing with server:', error));
 }
 
-// Function to add a new quote and sync with the server
+// Function to add a new quote and sync with server
 function addQuote() {
   const text = document.getElementById('newQuoteText').value;
   const category = document.getElementById('newQuoteCategory').value;
 
   if (text && category) {
-    const newQuote = { id: Date.now(), text, category }; // Use a unique id for each quote
+    const newQuote = { id: Date.now(), text, category };
     quotes.push(newQuote);
     saveQuotes();
 
-    // Sync new quote with server
+    // Post new quote to the server
     fetch(serverUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -187,12 +186,12 @@ function saveQuotes() {
   localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
-// Periodically sync data with the server (e.g., every 60 seconds)
-setInterval(syncDataWithServer, 60000);
+// Periodic syncing
+setInterval(syncDataWithServer, 60000); // Sync every 60 seconds
 
-// Initial data fetch when the page loads
+// Initial sync and setup
 window.onload = function() {
-  syncDataWithServer(); // Initial sync with server
+  syncDataWithServer(); // Initial sync
   showRandomQuote(); // Display a random quote if available
 };
 
@@ -207,4 +206,3 @@ function showRandomQuote() {
     `;
   }
 }
-
