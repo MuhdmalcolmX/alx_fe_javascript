@@ -116,44 +116,46 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
   };
   
 
-// -------------------------------------
+// -----------------------------------------------------------------
 
 // Define the server URL (JSONPlaceholder endpoint for posts, simulating quotes)
 //let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
 const serverUrl = 'https://jsonplaceholder.typicode.com/posts';
 
 // Fetch quotes from the server and handle conflicts
-function fetchQuotesFromServer() {
-  fetch(serverUrl)
-    .then(response => response.json())
-    .then(serverQuotes => {
-      const formattedServerQuotes = serverQuotes.map(quote => ({
-        id: quote.id,
-        text: quote.title,
-        category: quote.body
-      }));
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch(serverUrl);
+    const serverQuotes = await response.json();
 
-      let conflictsDetected = false;
+    const formattedServerQuotes = serverQuotes.map(quote => ({
+      id: quote.id,
+      text: quote.title,
+      category: quote.body
+    }));
 
-      formattedServerQuotes.forEach(serverQuote => {
-        const localIndex = quotes.findIndex(q => q.id === serverQuote.id);
+    let conflictsDetected = false;
 
-        if (localIndex !== -1) {
-          if (JSON.stringify(quotes[localIndex]) !== JSON.stringify(serverQuote)) {
-            conflictsDetected = true;
-            displayConflictResolution(quotes[localIndex], serverQuote);
-          }
-        } else {
-          quotes.push(serverQuote);
+    formattedServerQuotes.forEach(serverQuote => {
+      const localIndex = quotes.findIndex(q => q.id === serverQuote.id);
+
+      if (localIndex !== -1) {
+        if (JSON.stringify(quotes[localIndex]) !== JSON.stringify(serverQuote)) {
+          conflictsDetected = true;
+          displayConflictResolution(quotes[localIndex], serverQuote);
         }
-      });
-
-      if (!conflictsDetected) {
-        localStorage.setItem('quotes', JSON.stringify(quotes));
-        displayNotification('Quotes synced with server.');
+      } else {
+        quotes.push(serverQuote);
       }
-    })
-    .catch(error => displayNotification('Error syncing with server.'));
+    });
+
+    if (!conflictsDetected) {
+      localStorage.setItem('quotes', JSON.stringify(quotes));
+      displayNotification('Quotes synced with server.');
+    }
+  } catch (error) {
+    displayNotification('Error syncing with server.');
+  }
 }
 
 // Display notification messages
@@ -194,7 +196,7 @@ function resolveConflict(choice) {
 }
 
 // Add a new quote and sync with the server
-function addQuote() {
+async function addQuote() {
   const text = document.getElementById('newQuoteText').value;
   const category = document.getElementById('newQuoteCategory').value;
 
@@ -203,17 +205,18 @@ function addQuote() {
     quotes.push(newQuote);
     saveQuotes();
 
-    fetch(serverUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: newQuote.text, body: newQuote.category })
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+      const response = await fetch(serverUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newQuote.text, body: newQuote.category })
+      });
+      const data = await response.json();
       displayNotification('Quote synced with server.');
-    })
-    .catch(error => displayNotification('Error syncing quote with server.'));
-    
+    } catch (error) {
+      displayNotification('Error syncing quote with server.');
+    }
+
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
   } else {
