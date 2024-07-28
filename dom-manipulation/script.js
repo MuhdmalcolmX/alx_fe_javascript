@@ -115,3 +115,6 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     }
   };
   
+
+// -------------------------------------
+
